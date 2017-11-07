@@ -25,17 +25,19 @@ sudo -u vagrant bash -c 'for f in *.tar.gz; do tar xf $f; done'
 
 # Allow all requests to Kibana
 cat <<KIBANA_CONF >> /opt/elastic/kibana-$1-linux-x86_64/config/kibana.yml
-server.host: "0.0.0.0"
+server.host: "192.168.77.77"
+elasticsearch.url: "http://192.168.77.77:9200"
+elasticsearch.username: "kibana"
+elasticsearch.password: "changeme"
 KIBANA_CONF
 
 # Recommended ES settings to pass bootstrap checks
 # START BOOTSTRAP CHECKS CONFIG CHANGES #
 cat <<ES_CONF >> /opt/elastic/elasticsearch-$1/config/elasticsearch.yml
-network.host: [_local_, _eth1_]
+network.host: 192.168.77.77
 path.repo: ["/vagrant/es_snapshots"]
-
 bootstrap.memory_lock: true
-discovery.zen.minimum_master_nodes: 1
+discovery.type: single-node
 ES_CONF
 
 sed -i -e 's/Xms2g/Xms512m/g' /opt/elastic/elasticsearch-$1/config/jvm.options
